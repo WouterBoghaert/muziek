@@ -2,6 +2,7 @@ package be.vdab.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -14,14 +15,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
 
 import be.vdab.valueobjects.Track;
 
 @Entity
 @Table(name="albums")
+@NamedEntityGraphs({
+	@NamedEntityGraph(name=Album.MET_ARTIEST_EN_TRACKS,
+		attributeNodes = {
+			@NamedAttributeNode("artiest"),@NamedAttributeNode("tracks")}),
+	@NamedEntityGraph(name=Album.MET_ARTIEST,
+		attributeNodes = @NamedAttributeNode("artiest"))
+})
 public class Album implements Serializable {
 	private static final long serialVersionUID = 1L;
+	public static final String MET_ARTIEST_EN_TRACKS = "Album.metArtiestEnTracks";
+	public static final String MET_ARTIEST = "Album.metArtiest";
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -52,6 +65,10 @@ public class Album implements Serializable {
 	
 	public String getNaam() {
 		return naam;
+	}
+	
+	public Set<Track> getTracks() {
+		return Collections.unmodifiableSet(tracks);
 	}
 	
 	public BigDecimal getAlbumduur() {
